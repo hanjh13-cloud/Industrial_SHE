@@ -1,0 +1,35 @@
+name: safety-news-bot
+
+on:
+ schedule:
+   - cron: '*/30 * * * *'
+ workflow_dispatch: 
+
+permissions: 
+ contents: write
+
+jobs:
+ run-bot:
+  runs-on: ubuntu-latest
+  steps:
+    - name: 코드 가져오기
+      uses: actions/checkout@v3
+
+    - name: 파이썬 설치
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: 필요한 패키지 설치
+      run: pip install -r requirements.txt
+
+    - name: 봇 실행
+      env:
+       TELEGRAM_TOKEN: ${{secret.TELEGRAM_TOKEN}}
+       CHAT_ID: ${{secrets.CHAT_ID}}
+      run: |
+       git config --global user.name"news-bot"
+       git config --glogal user.email"boy@example.com"
+       git add sent_news.txt
+       git commit -m "update sent log" || echo "변경사항 없음"
+       git push
