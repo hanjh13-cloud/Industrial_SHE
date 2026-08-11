@@ -34,7 +34,10 @@ def save_sent_log(sent_set):
       f.write(link+"\n")
 
 def keyword_filter(title):
-  return True
+  if any(bad in title for bad in KEYWORD_BLACKLIST):
+    return False
+  return any(good in title for good in KEYWORD_WHITELIST)
+
   
 async def send_news():
   bot = Bot(token=TELEGRAM_TOKEN)
