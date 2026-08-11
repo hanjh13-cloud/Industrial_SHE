@@ -32,4 +32,5 @@ jobs:
        git config --glogal user.email"boy@example.com"
        git add sent_news.txt
        git commit -m "update sent log" || echo "변경사항 없음"
-       git push
+       git push || echo "push 실패 - 무시하고 진행"
+      continue-on-error: true
