@@ -2,8 +2,9 @@ import asyncio
 import feedparser
 from telegram import bot
 
-telegram_token = 8807684716:AAE_lZ7HSIXNiM70O27nDOfzhUhcGSu-NXY
-chat_id = 614352234
+import os
+TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
+CHAT_ID = os.environ["CHAT_ID"]
 
 RSS_SOURCE = [
   "http://news.google.com/rss/search?q=산업재해&h1=ko&g1=KR&ceid=KR:ko"
