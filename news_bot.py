@@ -1,4 +1,6 @@
 import asyncio
+import re
+import os
 import feedparser
 from telegram import Bot
 
@@ -21,19 +23,24 @@ KEYWORD_WHITELIST = ["산업재해", "중대재해", "산업안전", "산업보�
 KEYWORD_BLACKLIST = ["안전자산", "안전마진"]
 SENT_LOG_FILE = "sent_news.bot"
 
-def load_sent_log():
+def normalize_title(title: str) -> str:
+  title = re.sub(r"\s*-\s*[^-]+$", "",title)
+  title = re.sub(r"\s+", " ", title).strip().lower()
+  return title
+
+def load_sent_log(): -> set:
   try:
     with open(SENT_LOG_FILE, "r", encoding="utf-8") as f:
       return set(line.strip() for line in f.readlines())
   except FileNotFoundError:
     return set()
 
-def save_sent_log(sent_set):
+def save_sent_log(sent_set:set) -> None:
   with open(SENT_LOG_FILE, "w", encoding="utf-8") as f:
     for link in sent_set:
       f.write(link+"\n")
 
-def keyword_filter(title):
+def keyword_filter(title:str) -> bool:
   if any(bad in title for bad in KEYWORD_BLACKLIST):
     return False
   return any(good in title for good in KEYWORD_WHITELIST)
