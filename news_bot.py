@@ -31,14 +31,14 @@ def normalize_title(title):
 def load_sent_log():
   try:
     with open(SENT_LOG_FILE, "r", encoding="utf-8") as f:
-      return set(line.strip() for line in f.readlines())
+      return set(line.strip() for line in f.readlines() if line.strip())
   except FileNotFoundError:
     return set()
 
 def save_sent_log(sent_set):
   with open(SENT_LOG_FILE, "w", encoding="utf-8") as f:
-    for link in sent_set:
-      f.write(link+"\n")
+    for key in sorted(sent_set):
+      f.write(key+"\n")
 
 def keyword_filter(title):
   if any(bad in title for bad in KEYWORD_BLACKLIST):
@@ -58,7 +58,7 @@ async def send_news():
       link = entry.link
       key = normalize_title(title)
     
-      if link in sent_log:
+      if key in sent_log:
         continue
       if not keyword_filter(title):
         continue
@@ -68,7 +68,7 @@ async def send_news():
       print(f"전송완료: {title}")
       
       new_sent.add(key)
-      sentsent_log.add(key)
+      sent_log.add(key)
       
   save_sent_log(new_sent)
 
