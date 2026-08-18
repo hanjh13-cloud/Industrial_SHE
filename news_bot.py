@@ -23,24 +23,24 @@ KEYWORD_WHITELIST = ["산업재해", "중대재해", "산업안전", "산업보�
 KEYWORD_BLACKLIST = ["안전자산", "안전마진"]
 SENT_LOG_FILE = "sent_news.bot"
 
-def normalize_title(title: str) -> str:
+def normalize_title(title):
   title = re.sub(r"\s*-\s*[^-]+$", "",title)
   title = re.sub(r"\s+", " ", title).strip().lower()
   return title
 
-def load_sent_log(): -> set:
+def load_sent_log():
   try:
     with open(SENT_LOG_FILE, "r", encoding="utf-8") as f:
       return set(line.strip() for line in f.readlines())
   except FileNotFoundError:
     return set()
 
-def save_sent_log(sent_set:set) -> None:
+def save_sent_log(sent_set):
   with open(SENT_LOG_FILE, "w", encoding="utf-8") as f:
     for link in sent_set:
       f.write(link+"\n")
 
-def keyword_filter(title:str) -> bool:
+def keyword_filter(title):
   if any(bad in title for bad in KEYWORD_BLACKLIST):
     return False
   return any(good in title for good in KEYWORD_WHITELIST)
@@ -56,6 +56,7 @@ async def send_news():
     for entry in feed.entries[:10]:
       title = entry.title
       link = entry.link
+      key = normalize_title(title)
     
       if link in sent_log:
         continue
@@ -65,7 +66,10 @@ async def send_news():
       message = f"산업안전/재해 뉴스\n\n{title}\n\n {link}"
       await bot.send_message(chat_id=CHAT_ID, text=message)
       print(f"전송완료: {title}")
-      new_sent.add(link)
+      
+      new_sent.add(key)
+      sentsent_log.add(key)
+      
   save_sent_log(new_sent)
 
 if __name__ == "__main__":
